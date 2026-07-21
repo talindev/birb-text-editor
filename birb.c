@@ -26,9 +26,13 @@ struct editorConfig E;
 
 /*** terminal ***/
 
-void die(const char *s) {
+void clearScreen(void) {
 	write(STDOUT_FILENO, "\x1b[2J", 4);
 	write(STDOUT_FILENO, "\x1b[H", 3);
+}
+
+void die(const char *s) {
+	clearScreen();
 
 	perror(s);
 	exit(1);
@@ -150,7 +154,7 @@ void editorDrawRows(struct abuf *ab) {
 	for (y = 0; y < E.screenrows; y++) {
 		if (y == E.screenrows / 3) {
 			char welcome[80];
-			int welcomelen = snprintf(welcome, sizeof(welcome), "Birb editor -- version %s", BIRB_VERSION);
+			int welcomelen = snprintf(welcome, sizeof(welcome), "🦅 Birb editor v%s -- [Ctrl+Q to Exit]", BIRB_VERSION);
 			if (welcomelen > E.screencols) welcomelen = E.screencols;
 			int padding = (E.screencols - welcomelen) / 2;
 			if (padding) {
@@ -192,8 +196,7 @@ void editorProcessKeypress() {
 
 	switch (c) {
 		case CTRL_KEY('q'):
-			write(STDOUT_FILENO, "\x1b[2J", 4);
-			write(STDOUT_FILENO, "\x1b[H", 3);
+			clearScreen();
 
 			exit(0);
 			break;
